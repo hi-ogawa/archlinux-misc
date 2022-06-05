@@ -1,0 +1,56 @@
+pkgname=curl-quiche
+pkgver=0.0.0
+pkgrel=1
+pkgdesc="curl with experiment http3 support by quiche"
+arch=("x86_64")
+depends=() # TODO
+makedepends=("git" "cargo" "autoconf")
+source=("git+https://github.com/cloudflare/quiche" "git+https://github.com/curl/curl")
+sha512sums=("SKIP" "SKIP")
+
+prepare() {
+  cd "${srcdir}/quiche"
+  git submodule update --init --recommend-shallow --progress
+  cd -
+}
+
+build() {
+  #
+  # quiche
+  #
+  cd "${srcdir}/quiche"
+  cargo build --package quiche --release --features ffi,pkg-config-meta,qlog
+  mkdir -p quiche/deps/boringssl/src/lib
+  ln -vnf $(find target/release -name libcrypto.a -o -name libssl.a) quiche/deps/boringssl/src/lib/
+  cd -
+
+  #
+  # curl
+  #
+  cd "${srcdir}/curl"
+  autoreconf -fi
+  ./configure \
+    LDFLAGS="-Wl,-rpath,${srcdir}/quiche/target/release" \
+    --with-openssl="${srcdir}/quiche/quiche/deps/boringssl/src" \
+    --with-quiche="${srcdir}/quiche/target/release" \
+    --disable-shared \
+    --prefix='/usr' \
+    --mandir='/usr/share/man' \
+    --disable-ldap \
+    --disable-ldaps \
+    --disable-manual \
+    --enable-ipv6 \
+    --enable-threaded-resolver \
+    --with-gssapi \
+    --with-libssh2 \
+    --with-random='/dev/urandom' \
+    --with-ca-bundle='/etc/ssl/certs/ca-certificates.crt'
+  make
+  cd -
+}
+
+package() {
+  install -D "${srcdir}/curl/src/curl" "${pkgdir}/usr/bin/curl-quiche"
+  install -Dm0644 "${srcdir}/curl/COPYING" "${pkgdir}/usr/share/licenses/curl-quiche/COPYING.curl"
+  install -Dm0644 "${srcdir}/quiche/COPYING" "${pkgdir}/usr/share/licenses/curl-quiche/COPYING.quiche"
+}
