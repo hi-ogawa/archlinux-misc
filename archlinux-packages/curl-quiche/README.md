@@ -1,7 +1,13 @@
 # curl-quiche
 
 ```
-curl-quiche --http3 -Iv https://cloudflare-quic.com
+$ curl-quiche -V
+curl 7.84.0-DEV (x86_64-pc-linux-gnu) libcurl/7.84.0-DEV BoringSSL zlib/1.2.12 brotli/1.0.9 zstd/1.5.2 libidn2/2.3.2 libpsl/0.21.1 (+libidn2/2.3.0) libssh2/1.10.0 nghttp2/1.47.0 quiche/0.14.0 librtmp/2.3
+Release-Date: [unreleased]
+Protocols: dict file ftp ftps gopher gophers http https imap imaps mqtt pop3 pop3s rtmp rtsp scp sftp smb smbs smtp smtps telnet tftp
+Features: alt-svc AsynchDNS brotli GSS-API HSTS HTTP2 HTTP3 HTTPS-proxy IDN IPv6 Kerberos Largefile libz NTLM NTLM_WB PSL SPNEGO SSL UnixSockets zstd
+
+$ curl-quiche --http3 -Iv https://cloudflare-quic.com
 *   Trying 2606:4700:10::6816:826:443...
 *  CAfile: /etc/ssl/certs/ca-certificates.crt
 *  CApath: none
@@ -43,5 +49,6 @@ alt-svc: h3=":443"; ma=86400, h3-29=":443"; ma=86400
 
 ## references
 
+- https://github.com/curl/curl/blob/2bd75e5686b2e6ff3824c4dfb2b6ec86b60f454c/docs/HTTP3.md
 - https://archlinux.org/packages/core/x86_64/curl/
 - https://aur.archlinux.org/packages/curl-http3-msquic
