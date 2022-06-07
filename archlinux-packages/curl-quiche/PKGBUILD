@@ -30,7 +30,6 @@ build() {
   cd "${srcdir}/curl"
   autoreconf -fi
   ./configure \
-    LDFLAGS="-Wl,-rpath,${srcdir}/quiche/target/release" \
     --with-openssl="${srcdir}/quiche/quiche/deps/boringssl/src" \
     --with-quiche="${srcdir}/quiche/target/release" \
     --disable-shared \
@@ -51,6 +50,7 @@ build() {
 
 package() {
   install -D "${srcdir}/curl/src/curl" "${pkgdir}/usr/bin/curl-quiche"
+  install -D "${srcdir}/quiche/target/release/libquiche.so" "${pkgdir}/usr/lib/libquiche.so"
   install -Dm0644 "${srcdir}/curl/COPYING" "${pkgdir}/usr/share/licenses/curl-quiche/COPYING.curl"
   install -Dm0644 "${srcdir}/quiche/COPYING" "${pkgdir}/usr/share/licenses/curl-quiche/COPYING.quiche"
 }
