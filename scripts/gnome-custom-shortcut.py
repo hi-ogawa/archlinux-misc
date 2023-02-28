@@ -138,7 +138,10 @@ def main() -> None:
 
     command_add = subparsers.add_parser("add")
     command_add.add_argument("name")
-    command_add.add_argument("binding")
+    command_add.add_argument(
+        "binding",
+        help="e.g. '<Super>period' (see the list https://gitlab.gnome.org/GNOME/gtk/-/blob/dbaaa59758303aad1bfeaddcbe3e86baf8b4b0ba/gdk/gdkkeysyms.h)",
+    )
     command_add.add_argument("command")
 
     command_remove = subparsers.add_parser("remove")
