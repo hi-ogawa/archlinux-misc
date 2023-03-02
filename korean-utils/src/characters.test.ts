@@ -4,9 +4,10 @@ import {
   FINAL_CONSONANTS,
   INITIAL_CONSONANTS,
   SYLLABLES,
-  SYLLABLE_MAPS,
+  SYLLABLE_MAP,
   VOWELS,
 } from "./characters";
+import { mapValues } from "./misc";
 
 describe("characters", () => {
   it("CONSONANTS", () => {
@@ -156,67 +157,79 @@ describe("characters", () => {
     `);
   });
 
-  it("SYLLABLE_MAPS", () => {
-    expect(SYLLABLE_MAPS.length).toMatchInlineSnapshot("11172");
-    expect(
-      "\n" +
-        SYLLABLE_MAPS.slice(0, 50)
-          .map((s) => s.join(" ").trim())
-          .join("\n") +
-        "\n"
-    ).toMatchInlineSnapshot(`
-        "
-        가 ㄱ ㅏ
-        각 ㄱ ㅏ ㄱ
-        갂 ㄱ ㅏ ㄲ
-        갃 ㄱ ㅏ ㄳ
-        간 ㄱ ㅏ ㄴ
-        갅 ㄱ ㅏ ㄵ
-        갆 ㄱ ㅏ ㄶ
-        갇 ㄱ ㅏ ㄷ
-        갈 ㄱ ㅏ ㄹ
-        갉 ㄱ ㅏ ㄺ
-        갊 ㄱ ㅏ ㄻ
-        갋 ㄱ ㅏ ㄼ
-        갌 ㄱ ㅏ ㄽ
-        갍 ㄱ ㅏ ㄾ
-        갎 ㄱ ㅏ ㄿ
-        갏 ㄱ ㅏ ㅀ
-        감 ㄱ ㅏ ㅁ
-        갑 ㄱ ㅏ ㅂ
-        값 ㄱ ㅏ ㅄ
-        갓 ㄱ ㅏ ㅅ
-        갔 ㄱ ㅏ ㅆ
-        강 ㄱ ㅏ ㅇ
-        갖 ㄱ ㅏ ㅈ
-        갗 ㄱ ㅏ ㅊ
-        갘 ㄱ ㅏ ㅋ
-        같 ㄱ ㅏ ㅌ
-        갚 ㄱ ㅏ ㅍ
-        갛 ㄱ ㅏ ㅎ
-        개 ㄱ ㅐ
-        객 ㄱ ㅐ ㄱ
-        갞 ㄱ ㅐ ㄲ
-        갟 ㄱ ㅐ ㄳ
-        갠 ㄱ ㅐ ㄴ
-        갡 ㄱ ㅐ ㄵ
-        갢 ㄱ ㅐ ㄶ
-        갣 ㄱ ㅐ ㄷ
-        갤 ㄱ ㅐ ㄹ
-        갥 ㄱ ㅐ ㄺ
-        갦 ㄱ ㅐ ㄻ
-        갧 ㄱ ㅐ ㄼ
-        갨 ㄱ ㅐ ㄽ
-        갩 ㄱ ㅐ ㄾ
-        갪 ㄱ ㅐ ㄿ
-        갫 ㄱ ㅐ ㅀ
-        갬 ㄱ ㅐ ㅁ
-        갭 ㄱ ㅐ ㅂ
-        갮 ㄱ ㅐ ㅄ
-        갯 ㄱ ㅐ ㅅ
-        갰 ㄱ ㅐ ㅆ
-        갱 ㄱ ㅐ ㅇ
-        "
+  describe("SYLLABLE_MAPS", () => {
+    it("basic", () => {
+      expect(SYLLABLE_MAP.size).toMatchInlineSnapshot("11172");
+      const prettier = new Map(
+        [...SYLLABLE_MAP].slice(0, 40).map(([k, v]) => [k, v.join(" ")])
+      );
+      expect(prettier).toMatchInlineSnapshot(`
+        Map {
+          "가" => "ㄱ ㅏ ",
+          "각" => "ㄱ ㅏ ㄱ",
+          "갂" => "ㄱ ㅏ ㄲ",
+          "갃" => "ㄱ ㅏ ㄳ",
+          "간" => "ㄱ ㅏ ㄴ",
+          "갅" => "ㄱ ㅏ ㄵ",
+          "갆" => "ㄱ ㅏ ㄶ",
+          "갇" => "ㄱ ㅏ ㄷ",
+          "갈" => "ㄱ ㅏ ㄹ",
+          "갉" => "ㄱ ㅏ ㄺ",
+          "갊" => "ㄱ ㅏ ㄻ",
+          "갋" => "ㄱ ㅏ ㄼ",
+          "갌" => "ㄱ ㅏ ㄽ",
+          "갍" => "ㄱ ㅏ ㄾ",
+          "갎" => "ㄱ ㅏ ㄿ",
+          "갏" => "ㄱ ㅏ ㅀ",
+          "감" => "ㄱ ㅏ ㅁ",
+          "갑" => "ㄱ ㅏ ㅂ",
+          "값" => "ㄱ ㅏ ㅄ",
+          "갓" => "ㄱ ㅏ ㅅ",
+          "갔" => "ㄱ ㅏ ㅆ",
+          "강" => "ㄱ ㅏ ㅇ",
+          "갖" => "ㄱ ㅏ ㅈ",
+          "갗" => "ㄱ ㅏ ㅊ",
+          "갘" => "ㄱ ㅏ ㅋ",
+          "같" => "ㄱ ㅏ ㅌ",
+          "갚" => "ㄱ ㅏ ㅍ",
+          "갛" => "ㄱ ㅏ ㅎ",
+          "개" => "ㄱ ㅐ ",
+          "객" => "ㄱ ㅐ ㄱ",
+          "갞" => "ㄱ ㅐ ㄲ",
+          "갟" => "ㄱ ㅐ ㄳ",
+          "갠" => "ㄱ ㅐ ㄴ",
+          "갡" => "ㄱ ㅐ ㄵ",
+          "갢" => "ㄱ ㅐ ㄶ",
+          "갣" => "ㄱ ㅐ ㄷ",
+          "갤" => "ㄱ ㅐ ㄹ",
+          "갥" => "ㄱ ㅐ ㄺ",
+          "갦" => "ㄱ ㅐ ㄻ",
+          "갧" => "ㄱ ㅐ ㄼ",
+        }
       `);
+    });
+
+    it("example", () => {
+      expect([..."케플러"].map((c) => SYLLABLE_MAP.get(c)))
+        .toMatchInlineSnapshot(`
+        [
+          [
+            "ㅋ",
+            "ㅔ",
+            undefined,
+          ],
+          [
+            "ㅍ",
+            "ㅡ",
+            "ㄹ",
+          ],
+          [
+            "ㄹ",
+            "ㅓ",
+            undefined,
+          ],
+        ]
+      `);
+    });
   });
 });

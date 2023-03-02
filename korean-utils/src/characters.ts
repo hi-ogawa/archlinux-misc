@@ -1,14 +1,14 @@
 import { range } from "@hiogawa/utils";
-import { difference } from "./misc";
+import { difference, inRange, mapKeys } from "./misc";
 
-const OFFSET_CONSONANT = 0x3131;
-const OFFSET_VOWEL = 0x314f;
-const OFFSET_SYLLABLE = 0xac00;
+const CONSONANT_OFFSET = 0x3131;
+const VOWEL_OFFSET = 0x314f;
+export const SYLLABLE_OFFSET = 0xac00;
 
-export const CONSONANTS = range(OFFSET_CONSONANT, OFFSET_CONSONANT + 30).map(
+export const CONSONANTS = range(CONSONANT_OFFSET, CONSONANT_OFFSET + 30).map(
   (i) => String.fromCodePoint(i)
 );
-export const VOWELS = range(OFFSET_VOWEL, OFFSET_VOWEL + 21).map((i) =>
+export const VOWELS = range(VOWEL_OFFSET, VOWEL_OFFSET + 21).map((i) =>
   String.fromCodePoint(i)
 );
 
@@ -28,26 +28,33 @@ export const INITIAL_CONSONANTS = difference(CONSONANTS, [
 
 export const FINAL_CONSONANTS = difference(CONSONANTS, ["ㄸ", "ㅃ", "ㅉ"]);
 
-type SyllableMap = [
-  syllable: string,
-  initial: string,
-  medial: string,
-  final: string | undefined
-];
-
-export function createSyllableMaps() {
-  const result: SyllableMap[] = [];
-  let offset = OFFSET_SYLLABLE;
-  for (const initial of INITIAL_CONSONANTS) {
-    for (const medial of VOWELS) {
-      for (const final of [undefined, ...FINAL_CONSONANTS]) {
-        result.push([String.fromCodePoint(offset++), initial, medial, final]);
+export const SYLLABLE_MAP: Map<string, [string, string, string | undefined]> =
+  (() => {
+    const acc: [string, [string, string, string | undefined]][] = [];
+    let offset = SYLLABLE_OFFSET;
+    for (const i of INITIAL_CONSONANTS) {
+      for (const m of VOWELS) {
+        for (const f of [undefined, ...FINAL_CONSONANTS]) {
+          acc.push([String.fromCodePoint(offset++), [i, m, f]]);
+        }
       }
     }
-  }
-  return result;
+    return new Map(acc);
+  })();
+
+export const SYLLABLE_CODE_MAP = mapKeys(
+  SYLLABLE_MAP,
+  (_v, k) => k.codePointAt(0)!
+);
+
+export const SYLLABLES = [...SYLLABLE_MAP.keys()];
+
+export const SYLLABLE_OFFSET_END = SYLLABLE_OFFSET + SYLLABLES.length;
+
+export function isSyllable(s: string): boolean {
+  return s.length === 1 && isSyllableCodepoint(s.codePointAt(0)!);
 }
 
-export const SYLLABLE_MAPS = createSyllableMaps();
-
-export const SYLLABLES = SYLLABLE_MAPS.map((m) => m[0]);
+export function isSyllableCodepoint(code: number): boolean {
+  return inRange(code, SYLLABLE_OFFSET, SYLLABLE_OFFSET_END);
+}
