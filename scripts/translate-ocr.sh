@@ -14,6 +14,8 @@ set -eu -o pipefail
 # __ARGS__
 src_lang="$1"
 dst_lang="$2"
+shift 2
+tesseract_args=("${@}")  # tweak e.g. "--psm 6" (page segmentaion mode)
 
 # cf. https://github.com/tesseract-ocr/tessdoc/blob/master/ImproveQuality.md
 function Preprocess() {
@@ -44,9 +46,6 @@ function Main() {
 
     img_file=$(mktemp --suffix=.png)
 
-    # shellcheck disable=SC2064
-    trap "rm '${img_file}'" EXIT
-
     # Take screenshot
     gnome-screenshot -a -f "$img_file"
     if [ "$(file -b "$img_file")" = "empty" ]; then
@@ -58,11 +57,13 @@ function Main() {
     Preprocess "$img_file"
 
     # Run OCR
-    text=$(tesseract "${img_file}" stdout -l "${src_lang}")
+    text=$(tesseract "${img_file}" stdout -l "${src_lang}" "${tesseract_args[@]}")
     if [ -z "${text}" ]; then
-        echo "tesseract failed"
+        echo "tesseract failed ($img_file)"
         exit 1
     fi
+
+    rm "$img_file"
 
     # Open google translate
     xdg-open "https://translate.google.com/?op=translate&sl=${src_lang:0:2}&tl=${dst_lang:0:2}&text=${text}"
