@@ -7,22 +7,30 @@ import json
 import sys
 from typing import List, TypedDict
 
-# __USAGE__
-#   gnome-custom-shortcut.py add <name> <binding> <command>
-#   gnome-custom-shortcut.py add test-shortcut '<Super>period' 'notify-send hello'
-#
-#   gnome-custom-shortcut.py list
-#   [
-#     {
-#       "path": "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/",
-#       "name": "test-shortcut",
-#       "binding": "<Super>period",
-#       "command": "notify-send hello"
-#     }
-#   ]
-#
-#   gnome-custom-shortcut.py remove <name>
-#   gnome-custom-shortcut.py remove test-shortcut
+__USAGE__ = """
+---------------
+--- example ---
+---------------
+
+# gnome-custom-shortcut.py add <name> <binding> <command>
+$ gnome-custom-shortcut.py add test-shortcut '<Super>period' 'notify-send hello'
+
+$ gnome-custom-shortcut.py list
+[
+    {
+        "path": "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/",
+        "name": "test-shortcut",
+        "binding": "<Super>period",
+        "command": "notify-send hello"
+    }
+]
+
+# gnome-custom-shortcut.py remove <name>
+$ gnome-custom-shortcut.py remove test-shortcut
+
+---------------
+---------------
+"""
 
 # references
 #   https://askubuntu.com/questions/597395/how-to-set-custom-keyboard-shortcuts-from-terminal
@@ -132,7 +140,7 @@ def main_remove(name: str):
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(usage=__USAGE__)
     subparsers = parser.add_subparsers(dest="subcommand", required=True)
     subparsers.add_parser("list")
 
